@@ -1,0 +1,28 @@
+# IDE
+.idea/
+
+# CLion / CMake
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+cmake_install.cmake
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Binarios y objetos
+*.exe
+*.obj
+*.o
+*.out
+*.class
+
+# Carpetas de build comunes
+build/
+out/
+target/
+bin/
+
+# Sistema
+.DS_Store
