@@ -77,31 +77,31 @@ algorithms/
 ## 🧩 Módulos Principales
 
 ### brute-force
-```
+```bash
 Contiene soluciones basadas en evaluación directa y exploración completa de posibilidades.
 
 Este módulo permite practicar construcción de soluciones iniciales, análisis de casos y validación de lógica antes de aplicar optimizaciones.
 ```
 ### recursive
-```
+```bash
 Contiene problemas resueltos mediante recursividad.
 
 Este módulo refuerza el razonamiento por subproblemas, definición de casos base y descomposición progresiva de soluciones.
 ```
 ### simply-linked-list
-```
+```bash
 Contiene ejercicios relacionados con listas simplemente enlazadas.
 
 Este módulo trabaja conceptos como nodos, punteros, recorrido, inserción, eliminación y manipulación dinámica de memoria.
 ```
 ### library
-```
+```bash
 Contiene código reutilizable para apoyar diferentes soluciones.
 
 Actualmente incluye una biblioteca para listas enlazadas con estructuras y funciones auxiliares.
 ```
 ### lab-statements
-```
+```bash
 Contiene enunciados de laboratorios y exámenes utilizados como referencia para las soluciones.
 ```
 ---
