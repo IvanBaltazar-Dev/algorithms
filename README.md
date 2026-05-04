@@ -1,56 +1,57 @@
-[![C++](https://img.shields.io/badge/C%2B%2B-Programming-00599C?logo=cplusplus&logoColor=white)](https://isocpp.org/)
-[![CMake](https://img.shields.io/badge/CMake-Build%20System-064F8C?logo=cmake&logoColor=white)](https://cmake.org/)
-[![Git](https://img.shields.io/badge/Git-Version%20Control-F05032?logo=git&logoColor=white)](https://git-scm.com/)
+# Algorithms
 
-Repositorio personal orientado a la práctica, organización y documentación de soluciones de algoritmia en C++.
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="64" height="64" alt="C++" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="64" height="64" alt="CMake" />
+</p>
 
-Este proyecto forma parte de mi portafolio técnico y reúne ejercicios, laboratorios y exámenes resueltos aplicando estructuras de datos, recursividad, fuerza bruta y técnicas fundamentales de programación.
-
----
-
-## Sobre el Proyecto
-
-`Algorithms` es un repositorio enfocado en fortalecer habilidades de resolución de problemas mediante implementaciones en C++.
-
-El objetivo principal es mantener una base de soluciones organizada, clara y progresiva, que refleje práctica constante en algoritmia, estructuras de datos y desarrollo de código mantenible.
-
-Este repositorio demuestra:
-
-- Resolución de problemas algorítmicos.
-- Implementación de soluciones en C++.
-- Uso de CMake para proyectos de compilación.
-- Organización modular por tema o técnica.
-- Reutilización de código común.
-- Manejo de estructuras de datos fundamentales.
-- Control de versiones con Git.
+<p align="center">
+  <strong>Algoritmia, estructuras de datos y resolución de problemas en C++</strong>
+</p>
 
 ---
 
-## Tecnologías Utilizadas
+## 🧠 Sobre el Proyecto
 
-- C++
-- CMake
-- Git
-- GitHub
+`Algorithms` es un repositorio personal enfocado en la práctica y documentación de soluciones de algoritmia en C++.
 
----
+El proyecto reúne ejercicios, laboratorios y exámenes resueltos con una estructura clara, organizada por temas y técnicas. Su objetivo es mostrar progreso técnico en resolución de problemas, manejo de estructuras de datos y escritura de código modular.
 
-## Áreas de Práctica
-
-El repositorio incluye soluciones relacionadas con:
-
-- Fuerza bruta
-- Recursividad
-- Listas simplemente enlazadas
-- Manejo de punteros
-- Modularización de código
-- Separación de archivos fuente y cabecera
-- Implementación de funciones auxiliares
-- Organización de proyectos con CMake
+Este repositorio forma parte de mi portafolio profesional como evidencia práctica de fundamentos de programación y pensamiento algorítmico.
 
 ---
 
-## Estructura General
+## ⚙️ Tecnologías
+
+### Lenguaje y sistema de construcción
+
+<p>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
+</p>
+
+- **C++**: lenguaje principal para la implementación de soluciones.
+- **CMake**: sistema utilizado para configurar y compilar los proyectos.
+
+---
+
+## 📚 Áreas de Práctica
+
+El repositorio incluye problemas relacionados con:
+
+- Fuerza bruta.
+- Recursividad.
+- Listas simplemente enlazadas.
+- Manejo de punteros.
+- Modularización de código.
+- Separación entre archivos fuente y cabecera.
+- Implementación de funciones auxiliares.
+- Organización de proyectos con CMake.
+
+---
+
+## 📁 Estructura General
 
 ```text
 algorithms/
@@ -74,25 +75,25 @@ algorithms/
 
 ---
 
-## Módulos Principales
+## 🧩 Módulos Principales
 
 ### brute-force
 
-Contiene soluciones basadas en evaluación directa, exploración completa de posibilidades y estrategias de fuerza bruta.
+Contiene soluciones basadas en evaluación directa y exploración completa de posibilidades.
 
-Este módulo permite practicar análisis de casos, construcción de soluciones iniciales y validación de lógica antes de aplicar optimizaciones.
+Este módulo permite practicar construcción de soluciones iniciales, análisis de casos y validación de lógica antes de aplicar optimizaciones.
 
 ### recursive
 
 Contiene problemas resueltos mediante recursividad.
 
-Este módulo refuerza el razonamiento por subproblemas, casos base, llamadas recursivas y descomposición progresiva de soluciones.
+Este módulo refuerza el razonamiento por subproblemas, definición de casos base y descomposición progresiva de soluciones.
 
 ### simply-linked-list
 
 Contiene ejercicios relacionados con listas simplemente enlazadas.
 
-Este módulo trabaja conceptos como nodos, punteros, inserción, recorrido, eliminación y manipulación dinámica de memoria.
+Este módulo trabaja conceptos como nodos, punteros, recorrido, inserción, eliminación y manipulación dinámica de memoria.
 
 ### library
 
@@ -106,11 +107,11 @@ Contiene enunciados de laboratorios y exámenes utilizados como referencia para 
 
 ---
 
-## Enfoque Técnico
+## 🛠️ Enfoque Técnico
 
-El repositorio busca mantener soluciones comprensibles, organizadas y fáciles de revisar.
+Cada solución busca mantener una estructura simple y entendible.
 
-Cada problema suele estar compuesto por archivos como:
+Archivos comunes por proyecto:
 
 ```text
 main.cpp
@@ -123,16 +124,16 @@ Esta separación permite distinguir entre:
 
 - Punto de entrada del programa.
 - Implementación de funciones.
-- Declaraciones y estructuras.
+- Declaraciones, estructuras y prototipos.
 - Configuración de compilación.
 
 ---
 
-## Compilación
+## 🚀 Compilación
 
 La mayoría de proyectos utilizan CMake.
 
-Ejemplo general de compilación:
+Ejemplo general:
 
 ```bash
 mkdir build
@@ -145,21 +146,20 @@ Algunos ejercicios tienen su propio archivo `CMakeLists.txt`, por lo que la comp
 
 ---
 
-## Buenas Prácticas Aplicadas
+## ✅ Buenas Prácticas Aplicadas
 
-Este repositorio aplica buenas prácticas como:
+Este repositorio prioriza:
 
+- Código organizado por tema.
 - Separación entre archivos `.cpp` y `.h`.
-- Uso de carpetas por tema o técnica.
-- Centralización de recursos compartidos.
 - Reutilización de estructuras comunes.
-- Nombres consistentes para facilitar navegación.
-- Exclusión de archivos generados por compilación o IDE.
-- Commits descriptivos para documentar cambios relevantes.
+- Soluciones legibles y fáciles de revisar.
+- Carpetas separadas para laboratorios, exámenes y ejercicios.
+- Centralización de recursos compartidos.
 
 ---
 
-## Valor como Portafolio
+## 💼 Valor como Portafolio
 
 Este proyecto evidencia práctica en fundamentos importantes para desarrollo de software:
 
@@ -167,15 +167,14 @@ Este proyecto evidencia práctica en fundamentos importantes para desarrollo de 
 - Programación estructurada en C++.
 - Manejo de memoria y punteros.
 - Diseño modular.
-- Organización de repositorios.
-- Uso de herramientas de construcción.
-- Control de versiones.
+- Organización de soluciones por dominio.
+- Uso de herramientas de construcción con CMake.
 
-Aunque el repositorio tiene origen académico, está organizado con una visión profesional para mostrar evolución técnica, disciplina de trabajo y capacidad de mantener una base de código clara.
+Aunque el repositorio tiene origen académico, está organizado con una visión profesional para mostrar disciplina de trabajo, evolución técnica y capacidad para mantener una base de código clara.
 
 ---
 
-## Estado del Proyecto
+## 📌 Estado del Proyecto
 
 Proyecto en desarrollo activo.
 
@@ -183,8 +182,6 @@ Actualmente se encuentra en una etapa de organización, limpieza estructural y c
 
 ---
 
-## Autor
+## 👤 Autor
 
 **Ivan Baltazar**
-
-Repositorio personal de práctica y portafolio técnico en algoritmia y C++.
