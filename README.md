@@ -1,9 +1,6 @@
 # Algorithms
 
-<p align="left">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" style="display:inline-block; margin-right:12px;" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" style="display:inline-block; margin-right:12px;" />
-</p>
+<div align="center"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="64" height="64" alt="C++" />&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="64" height="64" alt="CMake" /></div>
 
 <p align="center">
   <strong>Algoritmia, estructuras de datos y resolución de problemas en C++</strong>
