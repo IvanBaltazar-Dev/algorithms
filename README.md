@@ -22,7 +22,7 @@ Este repositorio forma parte de mi portafolio profesional como evidencia prácti
 
 ## ⚙️ Tecnologías
 
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=cpp,cmake" alt="C++ and CMake" />
 </div>
 
