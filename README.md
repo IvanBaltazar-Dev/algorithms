@@ -22,25 +22,16 @@ Este repositorio forma parte de mi portafolio profesional como evidencia prácti
 
 ## ⚙️ Tecnologías
 
-### Lenguaje y sistema de construcción
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=cpp,cmake" alt="C++ and CMake" />
+</div>
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
-      <br />
-      <strong>C++</strong>
-    </td>
-    <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
-      <br />
-      <strong>CMake</strong>
-    </td>
-  </tr>
-</table>
+<br />
 
-- **C++**: lenguaje principal para la implementación de soluciones.
-- **CMake**: sistema utilizado para configurar y compilar los proyectos.
+| Tecnología | Uso en el proyecto |
+|---|---|
+| **C++** | Lenguaje principal para implementar soluciones algorítmicas. |
+| **CMake** | Sistema de construcción usado para configurar y compilar los ejercicios. |
 
 ---
 
