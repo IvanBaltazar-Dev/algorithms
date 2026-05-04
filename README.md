@@ -1,19 +1,9 @@
 # Algorithms
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
-      <br />
-      <strong>C++</strong>
-    </td>
-    <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
-      <br />
-      <strong>CMake</strong>
-    </td>
-  </tr>
-</table>
+<p align="left">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" style="display:inline-block; margin-right:12px;" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" style="display:inline-block; margin-right:12px;" />
+</p>
 
 <p align="center">
   <strong>Algoritmia, estructuras de datos y resolución de problemas en C++</strong>
@@ -38,12 +28,12 @@ Este repositorio forma parte de mi portafolio profesional como evidencia prácti
 <table>
   <tr>
     <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52"/>
       <br />
       <strong>C++</strong>
     </td>
     <td align="center">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" />
       <br />
       <strong>CMake</strong>
     </td>
