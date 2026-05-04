@@ -77,33 +77,33 @@ algorithms/
 ## 🧩 Módulos Principales
 
 ### brute-force
-
+```
 Contiene soluciones basadas en evaluación directa y exploración completa de posibilidades.
 
 Este módulo permite practicar construcción de soluciones iniciales, análisis de casos y validación de lógica antes de aplicar optimizaciones.
-
+```
 ### recursive
-
+```
 Contiene problemas resueltos mediante recursividad.
 
 Este módulo refuerza el razonamiento por subproblemas, definición de casos base y descomposición progresiva de soluciones.
-
+```
 ### simply-linked-list
-
+```
 Contiene ejercicios relacionados con listas simplemente enlazadas.
 
 Este módulo trabaja conceptos como nodos, punteros, recorrido, inserción, eliminación y manipulación dinámica de memoria.
-
+```
 ### library
-
+```
 Contiene código reutilizable para apoyar diferentes soluciones.
 
 Actualmente incluye una biblioteca para listas enlazadas con estructuras y funciones auxiliares.
-
+```
 ### lab-statements
-
+```
 Contiene enunciados de laboratorios y exámenes utilizados como referencia para las soluciones.
-
+```
 ---
 
 ## 🛠️ Enfoque Técnico
