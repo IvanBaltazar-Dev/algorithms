@@ -1,10 +1,19 @@
 # Algorithms
 
-<p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="64" height="64" alt="C++" />
-  &nbsp;&nbsp;&nbsp;
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="64" height="64" alt="CMake" />
-</p>
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
+      <br />
+      <strong>C++</strong>
+    </td>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
+      <br />
+      <strong>CMake</strong>
+    </td>
+  </tr>
+</table>
 
 <p align="center">
   <strong>Algoritmia, estructuras de datos y resolución de problemas en C++</strong>
@@ -26,10 +35,20 @@ Este repositorio forma parte de mi portafolio profesional como evidencia prácti
 
 ### Lenguaje y sistema de construcción
 
-<p>
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
-</p>
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="52" height="52" alt="C++" />
+      <br />
+      <strong>C++</strong>
+    </td>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="52" height="52" alt="CMake" />
+      <br />
+      <strong>CMake</strong>
+    </td>
+  </tr>
+</table>
 
 - **C++**: lenguaje principal para la implementación de soluciones.
 - **CMake**: sistema utilizado para configurar y compilar los proyectos.
