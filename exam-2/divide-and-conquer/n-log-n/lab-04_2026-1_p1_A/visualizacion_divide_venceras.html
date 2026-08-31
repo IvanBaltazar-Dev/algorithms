@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divide y Vencerás — Polo con más unidades (paso a paso)</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#111834; --card:#151d3b; --card2:#1b2547;
+    --ink:#e8ecff; --muted:#9aa6d6; --line:#2a3566;
+    --accent:#60a5fa; --accent2:#34d399; --warn:#fbbf24; --danger:#fb7185;
+    --divide:#fb923c; --combine:#34d399;
+    --caso1:#34d399; --caso2:#60a5fa; --caso3:#c084fc;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 20% -5%, #16204a 0%, var(--bg) 55%) fixed;
+    color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    line-height:1.5; padding:22px; max-width:1280px; margin:0 auto;
+  }
+  h1{font-size:22px;margin:0 0 4px}
+  h2{font-size:15px;margin:0 0 10px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+  a{color:var(--accent)}
+  .sub{color:var(--muted);font-size:13px;margin:0}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:14px 0;box-shadow:var(--shadow)}
+  .row{display:flex;gap:14px;flex-wrap:wrap}
+  .row>.card{flex:1;min-width:280px;margin:0}
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:900px){.grid3{grid-template-columns:1fr}}
+
+  /* Enunciado */
+  .enun{font-size:13.5px;color:#cdd5ff}
+  .enun b{color:#fff}
+  .pill{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--muted);margin-right:6px}
+  .pill b{color:var(--ink)}
+
+  /* Controles */
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  button{
+    background:var(--card2);color:var(--ink);border:1px solid var(--line);
+    border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer;transition:.15s;font-weight:600
+  }
+  button:hover{border-color:var(--accent);transform:translateY(-1px)}
+  button:active{transform:translateY(0)}
+  button.primary{background:linear-gradient(180deg,#2b6fe0,#1f57bd);border-color:#2b6fe0}
+  button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .counter{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;min-width:120px}
+  input[type=range]{accent-color:var(--accent)}
+  input[type=text]{background:#0c1330;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:14px;font-family:ui-monospace,Consolas,monospace;letter-spacing:2px;width:230px}
+  .progress{height:8px;background:#0c1330;border-radius:999px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+  .progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}
+
+  /* Explicación */
+  .explica{background:linear-gradient(180deg,#17224a,#141b39);border:1px solid #33427e;border-left:5px solid var(--accent);
+           border-radius:12px;padding:14px 16px;font-size:15px;min-height:66px}
+  .explica .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+                padding:2px 9px;border-radius:6px;margin-right:8px;vertical-align:middle}
+  .tag.divide{background:rgba(251,146,60,.16);color:#fdba74;border:1px solid #7c4a1e}
+  .tag.combine{background:rgba(52,211,153,.16);color:#6ee7b7;border:1px solid #1e6b4d}
+  .tag.base{background:rgba(96,165,250,.16);color:#93c5fd;border:1px solid #274a86}
+  .tag.mayor{background:rgba(251,191,36,.16);color:#fcd34d;border:1px solid #7a5b12}
+  .explica code{background:#0c1330;padding:1px 6px;border-radius:6px;color:#cfe0ff}
+
+  /* Arreglo original */
+  .almacen{display:flex;gap:6px;flex-wrap:wrap}
+  .celda{width:46px;text-align:center;border-radius:10px;border:1px solid var(--line);background:#0e1531;padding:6px 0;position:relative;transition:.2s}
+  .celda .idx{font-size:10px;color:var(--muted)}
+  .celda .val{font-size:20px;font-weight:800}
+  .celda.on{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15);transform:translateY(-3px)}
+  .celda.dim{opacity:.32}
+
+  /* Árbol */
+  .arbolWrap{overflow:auto;padding-bottom:8px}
+  #arbol{position:relative;margin:0 auto}
+  #arbol svg{position:absolute;left:0;top:0;pointer-events:none;z-index:0}
+  .node{position:absolute;transform:translateX(-50%);width:104px;background:#0e1531;border:1.5px solid var(--line);
+        border-radius:11px;padding:6px 6px 7px;z-index:1;transition:.18s;cursor:pointer}
+  .node .rng{font-size:11px;font-weight:800;color:#cfe0ff;text-align:center}
+  .node .seg{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin:3px 0}
+  .node .seg span{font-size:11px;font-weight:800;width:15px;height:16px;line-height:16px;text-align:center;border-radius:4px;color:#0b1020}
+  .node .res{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;min-height:2px}
+  .node.pendiente{opacity:.45}
+  .node.esperando{border-color:#3b62b8;background:#101a3d}
+  .node.activo{border-color:var(--accent);background:#122150;box-shadow:0 0 0 3px rgba(96,165,250,.18)}
+  .node.combinando{border-color:var(--combine);background:#0f2a24;box-shadow:0 0 0 3px rgba(52,211,153,.2);animation:pulse 1.1s infinite}
+  .node.listo{border-color:#2c8f6b;background:#0f2320}
+  .node.focus{outline:2px solid #fff;outline-offset:2px}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(52,211,153,.2)}50%{box-shadow:0 0 0 6px rgba(52,211,153,.05)}}
+
+  /* Chips (tabla polo:cantidad) */
+  .chip{display:inline-flex;align-items:center;gap:3px;background:var(--c,#334);color:#0b1020;
+        font-weight:800;border-radius:6px;padding:1px 5px;font-size:11px;line-height:1.5}
+  .chip b{background:rgba(0,0,0,.28);color:#fff;border-radius:4px;padding:0 4px;font-size:10px}
+  .chip.big{font-size:15px;padding:4px 9px;border-radius:9px}
+  .chip.big b{font-size:13px}
+
+  /* Pila */
+  .stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:60px}
+  .frame{background:#0e1531;border:1px solid var(--line);border-left:4px solid #3b62b8;border-radius:9px;padding:7px 10px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+  .frame.top{border-left-color:var(--accent);background:#122150;box-shadow:var(--shadow)}
+  .frame small{color:var(--muted)}
+  .stackHint{color:var(--muted);font-size:12px;margin-top:6px}
+
+  /* Detalle merge */
+  .mrow{margin:8px 0}
+  .mlabel{font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:700}
+  .mcells{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
+  .mcell{position:relative;text-align:center}
+  .mcell .caret{font-size:10px;color:var(--accent);height:12px;font-weight:800}
+  .mcell.cmp .chip{outline:2px solid #fff;outline-offset:2px}
+  .mcell.added .chip{outline:2px solid var(--accent2);outline-offset:2px;animation:pop .3s}
+  @keyframes pop{from{transform:scale(1.35)}to{transform:scale(1)}}
+  /* fusión de dos Conteos iguales en la fila izq/der */
+  .mcell.merged .chip{outline:3px solid var(--warn);outline-offset:2px;animation:pop .3s}
+  /* Caja de operación: cómo se SUMA o se COPIA */
+  .opbox{background:#0a1430;border:1px dashed #3b62b8;border-radius:12px;padding:12px 10px;margin:12px 0;text-align:center}
+  .opbox .oplbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:9px;font-weight:800}
+  .opline{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+  .opsign{font-size:22px;font-weight:900;color:#cfe0ff}
+  .opsign.eq{color:var(--accent2)}
+  .opchip{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;background:var(--c,#334);
+          color:#0b1020;font-weight:900;border-radius:11px;padding:5px 12px;font-size:20px;line-height:1.15;min-width:44px}
+  .opchip .qty{background:rgba(0,0,0,.28);color:#fff;border-radius:6px;padding:0 7px;font-size:15px;margin-top:2px}
+  .opchip small{font-weight:700;font-size:10px;color:rgba(0,0,0,.62);margin-top:1px}
+  .opchip.res{outline:3px solid var(--accent2);outline-offset:3px;animation:sumpop .5s}
+  .opchip.q{background:#22305c;color:#93c5fd;border:1px dashed #3b62b8;font-size:24px}
+  @keyframes sumpop{0%{transform:scale(.55);opacity:.2}55%{transform:scale(1.28)}100%{transform:scale(1)}}
+  .opfrom{font-size:12px;color:#cdd5ff;margin-top:9px}
+  .fusion .opchip:not(.res):not(.q){animation:lean .7s ease-in-out infinite}
+  @keyframes lean{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+  .caso{display:inline-block;font-weight:800;font-size:12px;padding:3px 10px;border-radius:8px;margin-top:2px}
+  .caso1{background:rgba(52,211,153,.16);color:#6ee7b7;border:1px solid #1e6b4d}
+  .caso2{background:rgba(96,165,250,.16);color:#93c5fd;border:1px solid #274a86}
+  .caso3{background:rgba(192,132,252,.16);color:#d8b4fe;border:1px solid #5b3a86}
+  .ptrline{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--muted);margin-top:6px}
+  .ptrline b{color:var(--ink)}
+
+  /* Código */
+  pre.code{margin:0;background:#0a0f26;border:1px solid var(--line);border-radius:10px;padding:10px;
+           font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.7;overflow:auto}
+  pre.code .ln{display:block;padding:0 6px;border-radius:5px}
+  pre.code .ln.hl{background:rgba(96,165,250,.22);box-shadow:inset 3px 0 0 var(--accent)}
+  pre.code .cm{color:#6b7bb0}
+  pre.code .warnln{color:#fcd34d}
+  .codetitle{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--muted);margin-bottom:6px}
+
+  /* Legend */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+  .legend .item{display:flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+  .result-banner{display:none;background:linear-gradient(180deg,#123024,#0f241d);border:1px solid #2c8f6b;border-left:5px solid var(--accent2);border-radius:12px;padding:14px 18px;font-size:16px}
+  .result-banner.show{display:block;animation:pop .4s}
+  .result-banner .win{font-size:26px;font-weight:900;color:#fff}
+  .note{font-size:13px;color:#cdd5ff}
+  .note.warn{border-left:4px solid var(--warn);background:rgba(251,191,36,.06);padding:10px 12px;border-radius:8px}
+  .kbd{font-family:ui-monospace,Consolas,monospace;background:#0c1330;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12px}
+  .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>🧩 Divide y Vencerás &mdash; ¿Qué polo tiene más unidades?</h1>
+    <p class="sub">Visualización paso a paso del algoritmo recursivo <code>mergesort</code> + <code>merge</code> (complejidad O(n·log n), <b>sin ordenar</b> el arreglo original).</p>
+    <div class="enun" style="margin-top:10px">
+      <b>Enunciado.</b> Un almacén guarda <b>N</b> polos, cada país se representa con una letra. Hay <b>M</b> tipos posibles (no se conoce de antemano).
+      Se busca el polo con <b>mayor cantidad</b> de unidades y cuántas hay. Debe resolverse con divide y vencerás en O(n·log n) y <b>sin ordenar</b> el arreglo de productos.
+    </div>
+    <div style="margin-top:10px">
+      <span class="pill">N = <b id="pN">8</b></span>
+      <span class="pill">M (tipos distintos) = <b id="pM">4</b></span>
+      <span class="pill">Objetivo: <b>polo con más unidades</b></span>
+    </div>
+  </div>
+
+  <!-- Idea general -->
+  <div class="card">
+    <h2>La idea en 30 segundos</h2>
+    <div class="row">
+      <div class="card" style="background:#101838">
+        <b style="color:var(--divide)">1) DIVIDIR ✂️</b>
+        <p class="note" style="margin:6px 0 0">Partimos el segmento por la mitad, una y otra vez, hasta quedarnos con <b>un solo polo</b>.</p>
+      </div>
+      <div class="card" style="background:#101838">
+        <b style="color:var(--accent)">2) VENCER 🧠</b>
+        <p class="note" style="margin:6px 0 0">Un solo polo es trivial: su tabla es <span class="chip" style="--c:#60a5fa">X<b>1</b></span> (aparece 1 vez).</p>
+      </div>
+      <div class="card" style="background:#101838">
+        <b style="color:var(--combine)">3) COMBINAR 🔗</b>
+        <p class="note" style="margin:6px 0 0"><code>merge</code> une dos tablas <b>sumando</b> la cantidad de los polos iguales. Al final, la tabla de la raíz tiene la frecuencia de cada polo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entrada editable -->
+  <div class="card">
+    <h2>Datos de entrada (puedes cambiarlos)</h2>
+    <div class="controls">
+      <label class="muted">Almacén:</label>
+      <input type="text" id="entrada" value="A F B F F C C F" maxlength="40" title="Letras separadas por espacio o coma (máx 14)">
+      <button class="primary" id="btnGen">Generar ▶</button>
+      <span class="muted" style="font-size:12px">Ej.:</span>
+      <button data-ej="A F B F F C C F">Enunciado</button>
+      <button data-ej="A A A Z">Letra ≠ frecuencia</button>
+      <button data-ej="D B A C A D A B">8 mezclado</button>
+      <button data-ej="G G G G">Todos iguales</button>
+    </div>
+    <p id="entradaMsg" class="note warn" style="display:none;margin-top:10px"></p>
+  </div>
+
+  <!-- Reproductor -->
+  <div class="card">
+    <div class="controls">
+      <button id="btnFirst" title="Inicio (Home)">⏮</button>
+      <button id="btnPrev" title="Anterior (←)">◀ Anterior</button>
+      <button id="btnPlay" class="primary" title="Reproducir (Espacio)">▶ Reproducir</button>
+      <button id="btnNext" title="Siguiente (→)">Siguiente ▶</button>
+      <button id="btnLast" title="Final (End)">⏭</button>
+      <span class="counter" id="counter">Paso 0 / 0</span>
+      <span class="muted" style="font-size:12px">Velocidad</span>
+      <input type="range" id="speed" min="200" max="1600" step="100" value="850" style="width:120px">
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="legend" style="margin-top:12px">
+      <span class="item"><span class="dot" style="background:var(--divide)"></span>Dividir</span>
+      <span class="item"><span class="dot" style="background:var(--accent)"></span>Activo / base</span>
+      <span class="item"><span class="dot" style="background:var(--combine)"></span>Combinando</span>
+      <span class="item"><span class="dot" style="background:#2c8f6b"></span>Resuelto</span>
+      <span class="item">Teclas: <span class="kbd">←</span> <span class="kbd">→</span> <span class="kbd">espacio</span></span>
+    </div>
+  </div>
+
+  <!-- Explicación grande -->
+  <div class="explica" id="explica">Pulsa <b>Reproducir</b> o <b>Siguiente</b> para empezar.</div>
+
+  <!-- Resultado -->
+  <div class="result-banner" id="resultBanner"></div>
+
+  <!-- Arreglo original -->
+  <div class="card">
+    <h2>Arreglo original <code>almacen[]</code> <span class="muted" style="text-transform:none;font-weight:400">— resaltado = segmento que se está resolviendo</span></h2>
+    <div class="almacen" id="almacen"></div>
+  </div>
+
+  <!-- Árbol -->
+  <div class="card">
+    <h2>Árbol de recursión <span class="muted" style="text-transform:none;font-weight:400">— cada nodo es una llamada a <code>mergesort(inicio, fin)</code>. Haz clic en un nodo para saltar a su paso.</span></h2>
+    <div class="arbolWrap"><div id="arbol"></div></div>
+  </div>
+
+  <div class="grid2">
+    <!-- Detalle (merge / mayor / frame) -->
+    <div class="card">
+      <h2 id="detalleTitulo">En memoria</h2>
+      <div id="detalle"></div>
+    </div>
+    <!-- Pila -->
+    <div class="card">
+      <h2>Pila de llamadas <span class="muted" style="text-transform:none;font-weight:400">(recursión en memoria)</span></h2>
+      <div class="stack" id="stack"></div>
+      <p class="stackHint">La llamada de <b>arriba</b> es la que se está ejecutando ahora. Cada llamada espera a que terminen sus dos mitades antes de combinar.</p>
+    </div>
+  </div>
+
+  <!-- Código -->
+  <div class="card">
+    <h2>Tu código C++ <span class="muted" style="text-transform:none;font-weight:400">— la línea resaltada es la que se ejecuta en este paso</span></h2>
+    <div class="grid3">
+      <div>
+        <div class="codetitle">mergesort()</div>
+        <pre class="code" id="codeMs"></pre>
+      </div>
+      <div>
+        <div class="codetitle">merge()</div>
+        <pre class="code" id="codeMg"></pre>
+      </div>
+      <div>
+        <div class="codetitle">mayor()</div>
+        <pre class="code" id="codeMy"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notas -->
+  <div class="card">
+    <h2>Notas importantes</h2>
+    <p class="note">⏱️ <b>¿Por qué es O(n·log n)?</b> El árbol tiene <b>log n</b> niveles (partimos a la mitad cada vez). En cada nivel, la suma del trabajo de todos los <code>merge</code> recorre a lo sumo <b>n</b> elementos. log n niveles × n trabajo = <b>O(n·log n)</b>.</p>
+    <p class="note">🚫 <b>No se ordena el arreglo.</b> <code>almacen[]</code> jamás se reordena. Lo que se ordena por letra son las <b>mini‑tablas de frecuencia</b> (para poder unirlas rápido con <code>merge</code>), no los productos.</p>
+  </div>
+
+  <div class="card">
+    <h2>⚠️ Errores comunes (evítalos)</h2>
+    <p class="note warn">1) <b>Buscar el mayor por letra, no por cantidad.</b> Comparar <code>datos[i].polo &gt; mejor.polo</code> devuelve la letra alfabéticamente mayor, no la más frecuente. Debe ser <code>datos[i].cantidad &gt; mejor.cantidad</code>. Con <code>A A A Z</code> el error daría <code>Z:1</code> en vez de <code>A:3</code> — pruébalo con el botón <b>"Letra ≠ frecuencia"</b>.</p>
+    <p class="note warn">2) <b>Ordenar el arreglo <code>almacen[]</code>.</b> El enunciado lo prohíbe y no hace falta: lo que se ordena por letra son las mini‑tablas de frecuencia, nunca los productos.</p>
+    <p class="note warn">3) <b>Olvidar los bucles de "sobrantes" en <code>merge</code>.</b> Si al terminar el <code>while</code> principal no copias lo que queda en la mitad no agotada, se pierden polos.</p>
+    <p class="note warn">4) <b>No fusionar cuando el polo se repite.</b> En el Caso 1 debe quedar <b>un único Conteo</b> con la suma; si creas dos entradas del mismo polo, la tabla y el conteo final salen mal.</p>
+    <p class="note warn">5) <b>Caso base mal.</b> Un segmento de 1 elemento devuelve <code>cantidad = 1</code> (nunca 0) y <code>n = 1</code>.</p>
+  </div>
+
+  <p class="sub" style="text-align:center;margin:18px 0">Lab 04 · Divide y Vencerás · Generado para estudiar el ejercicio paso a paso.</p>
+
+<script>
+/* ==========================================================================
+   GENERADOR DE PASOS — replica fielmente tu C++ (mergesort/merge/mayor)
+   ========================================================================== */
+const PALETA = ['#60a5fa','#f472b6','#34d399','#fbbf24','#a78bfa','#fb7185','#22d3ee','#4ade80',
+                '#f87171','#c084fc','#38bdf8','#fca5a5','#5eead4','#fde047','#93c5fd','#f9a8d4',
+                '#86efac','#fcd34d','#d8b4fe','#67e8f9','#fdba74','#bef264','#f0abfc','#a5b4fc','#7dd3fc','#facc15'];
+
+let ALMACEN=[], COLOR={}, GEN=null, IDX=0, TIMER=null;
+
+const idOf=(a,b)=>a+'-'+b;
+const cloneL=arr=>arr.map(c=>({polo:c.polo,cantidad:c.cantidad}));
+const fmt=arr=>'['+arr.map(c=>c.polo+':'+c.cantidad).join(', ')+']';
+
+function buildAll(almacen){
+  const n=almacen.length;
+  const tree={};
+  const leafOrder=[];
+  const steps=[];
+  const stack=[];
+
+  // --- estructura del árbol ---
+  function buildTree(inicio,fin,depth,parent){
+    const nid=idOf(inicio,fin);
+    const nd={id:nid,inicio,fin,depth,parent,izq:null,der:null,mitad:null,esHoja:(inicio===fin),
+              estado:'pendiente',resultado:null};
+    tree[nid]=nd;
+    if(inicio===fin){ leafOrder.push(nid); }
+    else{
+      const mitad=inicio+Math.floor((fin-inicio)/2);
+      nd.mitad=mitad;
+      nd.izq=buildTree(inicio,mitad,depth+1,nid);
+      nd.der=buildTree(mitad+1,fin,depth+1,nid);
+    }
+    return nid;
+  }
+  buildTree(0,n-1,0,null);
+
+  // --- posiciones (layout) ---
+  const colW=124, levelH=138; let leafX=0, maxDepth=0;
+  (function assign(nid){
+    const nd=tree[nid];
+    maxDepth=Math.max(maxDepth,nd.depth);
+    if(nd.esHoja){ nd.x=leafX*colW+colW/2; leafX++; }
+    else{ assign(nd.izq); assign(nd.der); nd.x=(tree[nd.izq].x+tree[nd.der].x)/2; }
+    nd.y=nd.depth*levelH;
+  })(idOf(0,n-1));
+  const treeW=Math.max(leafX*colW, colW), treeH=(maxDepth+1)*levelH+6;
+
+  // --- snapshot ---
+  function snapshot(extra){
+    const treeCopy={};
+    for(const k in tree){ treeCopy[k]={estado:tree[k].estado, resultado:tree[k].resultado?cloneL(tree[k].resultado):null}; }
+    steps.push(Object.assign({
+      stackCopy:stack.map(f=>Object.assign({},f)),
+      treeCopy
+    },extra));
+  }
+
+  // --- mergesort instrumentado ---
+  function mergesortT(inicio,fin){
+    const nid=idOf(inicio,fin);
+    const frame={inicio,fin,mitad:null};
+    stack.push(frame);
+    tree[nid].estado='activo';
+
+    if(inicio===fin){
+      snapshot({phase:'base',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-base-if',
+        detalle:{tipo:'base-crear',polo:almacen[inicio]},
+        explTag:'base',
+        explic:`<b>Caso base.</b> El segmento <code>[${inicio}..${inicio}]</code> tiene un solo polo <b>'${almacen[inicio]}'</b>. Se crea en memoria un <code>Resultado</code> con una sola entrada: <span class="chip big" style="--c:${COLOR[almacen[inicio]]}">${almacen[inicio]}<b>1</b></span> y <code>n = 1</code>.`});
+      tree[nid].resultado=[{polo:almacen[inicio],cantidad:1}];
+      tree[nid].estado='listo';
+      snapshot({phase:'base-listo',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-base-ret',
+        detalle:{tipo:'base-listo',nid},
+        explTag:'base',
+        explic:`El segmento <code>[${inicio}..${inicio}]</code> ya está resuelto → <b>${fmt(tree[nid].resultado)}</b>. Se <b>regresa</b> a la llamada que lo pidió (se saca de la pila).`});
+      stack.pop();
+      return tree[nid].resultado;
+    }
+
+    const mitad=inicio+Math.floor((fin-inicio)/2);
+    frame.mitad=mitad;
+    snapshot({phase:'divide',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-mitad',
+      detalle:{tipo:'divide',inicio,fin,mitad},
+      explTag:'divide',
+      explic:`<b>DIVIDIR.</b> El segmento <code>[${inicio}..${fin}]</code> tiene más de un polo → se parte por la mitad en <code>mitad = ${mitad}</code>. Izquierda <code>[${inicio}..${mitad}]</code>, derecha <code>[${mitad+1}..${fin}]</code>. Primero resolvemos la izquierda.`});
+
+    tree[nid].estado='esperando';
+    const izq=mergesortT(inicio,mitad);
+
+    snapshot({phase:'vuelve-izq',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-der',
+      detalle:{tipo:'espera-der',inicio,fin,mitad,izqId:idOf(inicio,mitad)},
+      explTag:'divide',
+      explic:`Volvimos a <code>mergesort(${inicio}, ${fin})</code>. La mitad izquierda <code>[${inicio}..${mitad}]</code> ya devolvió <b>${fmt(izq)}</b>. Ahora resolvemos la mitad derecha <code>[${mitad+1}..${fin}]</code>.`});
+    const der=mergesortT(mitad+1,fin);
+
+    tree[nid].estado='combinando';
+    snapshot({phase:'combinar-inicio',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-merge',
+      detalle:{tipo:'combinar',izqId:idOf(inicio,mitad),derId:idOf(mitad+1,fin)},
+      explTag:'combine',
+      explic:`<b>COMBINAR.</b> Las dos mitades ya están resueltas: izquierda <b>${fmt(izq)}</b> y derecha <b>${fmt(der)}</b>. Llamamos a <code>merge</code> para unirlas <b>sumando</b> los polos repetidos.`});
+
+    const res=mergeT(izq,der,nid,idOf(inicio,mitad),idOf(mitad+1,fin));
+    tree[nid].resultado=res;
+    tree[nid].estado='listo';
+    snapshot({phase:'combinar-fin',activeNode:nid,seg:[inicio,fin],func:'mergesort',codeLine:'ms-merge',
+      detalle:{tipo:'combinar-fin',nid},
+      explTag:'combine',
+      explic:`Segmento <code>[${inicio}..${fin}]</code> resuelto → <b>${fmt(res)}</b>. Se regresa esta tabla hacia arriba.`});
+    stack.pop();
+    return res;
+  }
+
+  // --- merge instrumentado ---
+  function mergeT(izq,der,parentId,izqId,derId){
+    const res=[];
+    let i=0,j=0;
+    const snap=(iS,jS,caso,op,expl,line)=>snapshot({
+      phase:'merge',activeNode:parentId,func:'merge',codeLine:line,explTag:'combine',
+      merge:{izq:cloneL(izq),der:cloneL(der),res:cloneL(res),i:iS,j:jS,caso,op:op||null,
+             addedIdx:(op&&op.added)?res.length-1:-1,izqId,derId,fin:(op&&op.fin)||false},
+      explic:expl
+    });
+
+    snap(0,0,null,null,`Empieza <code>merge</code>. Punteros <code>i=0</code> (recorre la izquierda) y <code>j=0</code> (recorre la derecha). En cada paso se comparan <code>izq[i]</code> y <code>der[j]</code>: si son el <b>mismo polo</b> se <b>suman</b> en un solo Conteo; si no, se copia el de letra menor.`,'mg-init');
+
+    while(i<izq.length && j<der.length){
+      const ci=i, cj=j, a=izq[ci], b=der[cj];
+      if(a.polo===b.polo){
+        // (1a) los dos son iguales: se van a sumar (todavía NO está en res)
+        snap(ci,cj,1,{tipo:'suma',polo:a.polo,a:a.cantidad,b:b.cantidad,pre:true},
+          `<b>Caso 1 — mismo polo.</b> <code>izq[${ci}]='${a.polo}'</code> y <code>der[${cj}]='${b.polo}'</code> son el <b>mismo polo</b>. En vez de guardar dos entradas, se juntan en un <b>ÚNICO Conteo</b> sumando: <b>${a.cantidad} + ${b.cantidad}</b>.`,'mg-caso1');
+        res.push({polo:a.polo,cantidad:a.cantidad+b.cantidad});
+        // (1b) ya sumados: un único Conteo queda en res
+        snap(ci,cj,1,{tipo:'suma',polo:a.polo,a:a.cantidad,b:b.cantidad,resultado:a.cantidad+b.cantidad,added:true},
+          `Queda <b>un único Conteo</b> <span class="chip" style="--c:${COLOR[a.polo]}">${a.polo}<b>${a.cantidad+b.cantidad}</b></span> en el resultado (<code>${a.cantidad}+${b.cantidad}=${a.cantidad+b.cantidad}</code>). Ahora avanzan <b>i</b> y <b>j</b> a la vez.`,'mg-caso1');
+        i++; j++;
+      } else if(a.polo<b.polo){
+        res.push({polo:a.polo,cantidad:a.cantidad});
+        snap(ci,cj,2,{tipo:'copia-izq',polo:a.polo,val:a.cantidad,added:true},
+          `<b>Caso 2 — izquierda menor.</b> <code>'${a.polo}' &lt; '${b.polo}'</code>: entonces <b>'${a.polo}'</b> no está en la derecha, se copia tal cual <span class="chip" style="--c:${COLOR[a.polo]}">${a.polo}<b>${a.cantidad}</b></span> y avanza <b>i</b>.`,'mg-caso2');
+        i++;
+      } else {
+        res.push({polo:b.polo,cantidad:b.cantidad});
+        snap(ci,cj,3,{tipo:'copia-der',polo:b.polo,val:b.cantidad,added:true},
+          `<b>Caso 3 — derecha menor.</b> <code>'${b.polo}' &lt; '${a.polo}'</code>: entonces <b>'${b.polo}'</b> no está en la izquierda, se copia tal cual <span class="chip" style="--c:${COLOR[b.polo]}">${b.polo}<b>${b.cantidad}</b></span> y avanza <b>j</b>.`,'mg-caso3');
+        j++;
+      }
+    }
+    while(i<izq.length){
+      const ci=i, a=izq[ci];
+      res.push({polo:a.polo,cantidad:a.cantidad});
+      snap(ci,j,null,{tipo:'copia-izq',polo:a.polo,val:a.cantidad,added:true,sobrante:true},
+        `<b>Sobrante de la izquierda.</b> La derecha ya se agotó (<code>j=${j}=der.n</code>). Se copian los que faltan de la izquierda: <span class="chip" style="--c:${COLOR[a.polo]}">${a.polo}<b>${a.cantidad}</b></span>.`,'mg-dren-izq');
+      i++;
+    }
+    while(j<der.length){
+      const cj=j, b=der[cj];
+      res.push({polo:b.polo,cantidad:b.cantidad});
+      snap(i,cj,null,{tipo:'copia-der',polo:b.polo,val:b.cantidad,added:true,sobrante:true},
+        `<b>Sobrante de la derecha.</b> La izquierda ya se agotó (<code>i=${i}=izq.n</code>). Se copian los que faltan de la derecha: <span class="chip" style="--c:${COLOR[b.polo]}">${b.polo}<b>${b.cantidad}</b></span>.`,'mg-dren-der');
+      j++;
+    }
+    snap(i,j,null,{fin:true},
+      `<code>merge</code> terminó. Tabla combinada: <b>${fmt(res)}</b> — ordenada por letra y con las cantidades ya sumadas. Cada polo aparece <b>una sola vez</b>.`,'mg-return');
+    return res;
+  }
+
+  // --- mayor (versión CORRECTA: por cantidad) ---
+  function mayorT(res){
+    let mejor=0;
+    snapshot({phase:'mayor-inicio',func:'mayor',codeLine:'my-init',explTag:'mayor',
+      mayor:{lista:cloneL(res),idx:0,mejor:0},
+      explic:`Ya tenemos la <b>tabla de frecuencias final</b> ${fmt(res)}. Ahora <code>mayor()</code> busca la de mayor <b>cantidad</b>. Empieza suponiendo que la mejor es la primera: <span class="chip" style="--c:${COLOR[res[0].polo]}">${res[0].polo}<b>${res[0].cantidad}</b></span>.`});
+    for(let k=1;k<res.length;k++){
+      const cambia=res[k].cantidad>res[mejor].cantidad;
+      const prev=res[mejor];
+      if(cambia) mejor=k;
+      snapshot({phase:'mayor-paso',func:'mayor',codeLine:'my-if',explTag:'mayor',
+        mayor:{lista:cloneL(res),idx:k,mejor},
+        explic:cambia
+          ? `Comparo <span class="chip" style="--c:${COLOR[res[k].polo]}">${res[k].polo}<b>${res[k].cantidad}</b></span> con la mejor <span class="chip" style="--c:${COLOR[prev.polo]}">${prev.polo}<b>${prev.cantidad}</b></span>. Como <b>${res[k].cantidad} &gt; ${prev.cantidad}</b>, la nueva mejor es <b>'${res[k].polo}'</b>. 👑`
+          : `Comparo <span class="chip" style="--c:${COLOR[res[k].polo]}">${res[k].polo}<b>${res[k].cantidad}</b></span> con la mejor <span class="chip" style="--c:${COLOR[res[mejor].polo]}">${res[mejor].polo}<b>${res[mejor].cantidad}</b></span>. No la supera (${res[k].cantidad} ≤ ${res[mejor].cantidad}), la mejor sigue igual.`});
+    }
+    snapshot({phase:'fin',func:'mayor',codeLine:'my-return',explTag:'mayor',
+      mayor:{lista:cloneL(res),idx:res.length-1,mejor,done:true},
+      resultadoFinal:{polo:res[mejor].polo,cantidad:res[mejor].cantidad},
+      explic:`✅ <b>¡Resuelto!</b> El polo con más unidades es <b>'${res[mejor].polo}'</b> con <b>${res[mejor].cantidad}</b> unidades.`});
+    return res[mejor];
+  }
+
+  // ejecutar
+  const raiz=mergesortT(0,n-1);
+  mayorT(raiz);
+
+  // mapa nodo -> primer paso donde es activeNode (para clic)
+  const nodeStep={};
+  steps.forEach((s,ix)=>{ if(s.activeNode && nodeStep[s.activeNode]===undefined) nodeStep[s.activeNode]=ix; });
+
+  return {steps,tree,treeW,treeH,maxDepth,nodeStep,n};
+}
+
+/* ==========================================================================
+   CÓDIGO C++ (para el panel con resaltado)
+   ========================================================================== */
+const CODE_MS=[
+ ['ms-sig','Resultado mergesort(char almacen[], int inicio, int fin){'],
+ ['ms-base-if','  if (inicio == fin) {'],
+ ['ms-base','    Resultado res; res.n = 1;'],
+ ['ms-base','    res.datos[0].polo = almacen[inicio];'],
+ ['ms-base','    res.datos[0].cantidad = 1;'],
+ ['ms-base-ret','    return res;'],
+ ['','  }'],
+ ['ms-mitad','  int mitad = inicio + (fin - inicio)/2;'],
+ ['ms-izq','  Resultado izq = mergesort(almacen, inicio, mitad);'],
+ ['ms-der','  Resultado der = mergesort(almacen, mitad+1, fin);'],
+ ['ms-merge','  return merge(izq, der);'],
+ ['','}']
+];
+const CODE_MG=[
+ ['mg-sig','Resultado merge(Resultado izq, Resultado der){'],
+ ['mg-init','  Resultado res; res.n = 0;  int i=0, j=0;'],
+ ['mg-while','  while (i &lt; izq.n && j &lt; der.n) {'],
+ ['mg-caso1','    if (izq.datos[i].polo == der.datos[j].polo){'],
+ ['mg-caso1','      // mismo polo -> SUMAR cantidades'],
+ ['mg-caso2','    } else if (izq.datos[i].polo &lt; der.datos[j].polo){'],
+ ['mg-caso2','      // izquierda menor -> copiar izquierda'],
+ ['mg-caso3','    } else {'],
+ ['mg-caso3','      // derecha menor -> copiar derecha'],
+ ['','    }'],
+ ['','  }'],
+ ['mg-dren-izq','  while (i &lt; izq.n) { copiar izq; i++; }'],
+ ['mg-dren-der','  while (j &lt; der.n) { copiar der; j++; }'],
+ ['mg-return','  return res;'],
+ ['','}']
+];
+const CODE_MY=[
+ ['my-sig','Conteo mayor(Resultado conteos){'],
+ ['my-init','  Conteo mejor = conteos.datos[0];'],
+ ['my-loop','  for (int i=1; i &lt; conteos.n; i++){'],
+ ['my-if','    if (conteos.datos[i].cantidad &gt; mejor.cantidad)   // compara CANTIDAD'],
+ ['my-if','      mejor = conteos.datos[i];'],
+ ['','  }'],
+ ['my-return','  return mejor;'],
+ ['','}']
+];
+function renderCode(el,lines){
+  el.innerHTML=lines.map((l,ix)=>{
+    const cls=l[1].trimStart().startsWith('//')||l[1].includes('⚠')?' cm':'';
+    const warn=l[1].includes('⚠')?' warnln':'';
+    return `<span class="ln${cls}${warn}" data-line="${l[0]}" data-ix="${ix}">${l[1]}</span>`;
+  }).join('');
+}
+function hlCode(func,line){
+  document.querySelectorAll('pre.code .ln').forEach(s=>s.classList.remove('hl'));
+  if(!line) return;
+  const map={mergesort:'codeMs',merge:'codeMg',mayor:'codeMy'};
+  const box=document.getElementById(map[func]); if(!box) return;
+  box.querySelectorAll('.ln[data-line="'+line+'"]').forEach(s=>s.classList.add('hl'));
+}
+
+/* ==========================================================================
+   RENDER
+   ========================================================================== */
+const $=id=>document.getElementById(id);
+
+function chipHTML(c,cls=''){ return `<span class="chip ${cls}" style="--c:${COLOR[c.polo]||'#556'}">${c.polo}<b>${c.cantidad}</b></span>`; }
+
+function buildTreeDOM(){
+  const cont=$('arbol');
+  cont.innerHTML='';
+  cont.style.width=GEN.treeW+'px';
+  cont.style.height=GEN.treeH+'px';
+  // SVG de conexiones
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('width',GEN.treeW); svg.setAttribute('height',GEN.treeH);
+  for(const k in GEN.tree){
+    const nd=GEN.tree[k];
+    if(nd.parent){
+      const p=GEN.tree[nd.parent];
+      const line=document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',p.x); line.setAttribute('y1',p.y+54);
+      line.setAttribute('x2',nd.x); line.setAttribute('y2',nd.y+4);
+      line.setAttribute('stroke','#2a3566'); line.setAttribute('stroke-width','2');
+      svg.appendChild(line);
+    }
+  }
+  cont.appendChild(svg);
+  // Nodos
+  for(const k in GEN.tree){
+    const nd=GEN.tree[k];
+    const div=document.createElement('div');
+    div.className='node';
+    div.style.left=nd.x+'px'; div.style.top=nd.y+'px';
+    const rng=nd.esHoja?`índice ${nd.inicio}`:`[${nd.inicio}..${nd.fin}]`;
+    const seg=ALMACEN.slice(nd.inicio,nd.fin+1).map(ch=>`<span style="background:${COLOR[ch]}">${ch}</span>`).join('');
+    div.innerHTML=`<div class="rng">${rng}</div><div class="seg">${seg}</div><div class="res" data-res></div>`;
+    div.addEventListener('click',()=>{ if(GEN.nodeStep[k]!==undefined) goTo(GEN.nodeStep[k]); });
+    nd.dom=div; nd.domRes=div.querySelector('[data-res]');
+    cont.appendChild(div);
+  }
+}
+
+function buildAlmacenDOM(){
+  $('almacen').innerHTML=ALMACEN.map((ch,i)=>
+    `<div class="celda" data-i="${i}"><div class="idx">${i}</div><div class="val" style="color:${COLOR[ch]}">${ch}</div></div>`
+  ).join('');
+}
+
+function render(){
+  const s=GEN.steps[IDX];
+  // contador + barra
+  $('counter').textContent=`Paso ${IDX+1} / ${GEN.steps.length}`;
+  $('progressBar').style.width=((IDX)/(GEN.steps.length-1)*100)+'%';
+  // explicación
+  const tags={divide:'DIVIDIR',combine:'COMBINAR',base:'CASO BASE',mayor:'BUSCAR MAYOR'};
+  const tagCls=s.explTag||'base';
+  $('explica').innerHTML=`<span class="tag ${tagCls}">${tags[tagCls]||''}</span>${s.explic}`;
+  // arreglo original
+  document.querySelectorAll('#almacen .celda').forEach(c=>{
+    const i=+c.dataset.i;
+    c.classList.remove('on','dim');
+    if(s.seg){ if(i>=s.seg[0]&&i<=s.seg[1]) c.classList.add('on'); else c.classList.add('dim'); }
+  });
+  // árbol
+  for(const k in GEN.tree){
+    const nd=GEN.tree[k], st=s.treeCopy[k];
+    nd.dom.className='node '+st.estado+(s.activeNode===k?' focus':'');
+    nd.domRes.innerHTML=st.resultado?st.resultado.map(c=>chipHTML(c)).join(''):'';
+  }
+  if(s.activeNode&&GEN.tree[s.activeNode]) GEN.tree[s.activeNode].dom.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+  // pila
+  $('stack').innerHTML=s.stackCopy.map((f,ix)=>{
+    const top=ix===s.stackCopy.length-1;
+    const mid=f.mitad!==null&&f.mitad!==undefined?`, mitad=${f.mitad}`:'';
+    return `<div class="frame ${top?'top':''}">mergesort(<b>${f.inicio}</b>, <b>${f.fin}</b>)<small>${mid}</small></div>`;
+  }).join('') || '<div class="stackHint">La pila está vacía (ya terminó la recursión).</div>';
+  // código
+  hlCode(s.func,s.codeLine);
+  // detalle
+  renderDetalle(s);
+  // resultado
+  const rb=$('resultBanner');
+  if(s.resultadoFinal){
+    rb.classList.add('show');
+    rb.innerHTML=`🏆 <b>Solución</b><br><span class="win" style="color:${COLOR[s.resultadoFinal.polo]}">Polo con más unidades: ${s.resultadoFinal.polo}</span><br>Cantidad de polo: <b>${s.resultadoFinal.cantidad}</b>`;
+  } else rb.classList.remove('show');
+  // botones
+  $('btnPrev').disabled=IDX===0; $('btnFirst').disabled=IDX===0;
+  $('btnNext').disabled=IDX===GEN.steps.length-1; $('btnLast').disabled=IDX===GEN.steps.length-1;
+}
+
+function renderDetalle(s){
+  const box=$('detalle'), tit=$('detalleTitulo');
+  // ----- MERGE -----
+  if(s.merge){
+    tit.textContent='merge() — uniendo las dos tablas (sumando los polos iguales)';
+    const m=s.merge, op=m.op;
+    const cmpI=(m.caso&&!m.fin)?m.i:-1, cmpJ=(m.caso&&!m.fin)?m.j:-1;
+    // en el Caso 1, marcar como "merged" los dos Conteos iguales que se van a fusionar
+    const mergeI=(op&&op.tipo==='suma')?m.i:-1, mergeJ=(op&&op.tipo==='suma')?m.j:-1;
+    const cellRow=(arr,ptr,cmpIdx,ptrName,mergedIdx)=>{
+      if(arr.length===0) return `<div class="mcells"><span class="muted" style="font-size:12px">(vacío / agotado)</span></div>`;
+      return `<div class="mcells">${arr.map((c,ix)=>{
+        const cls=(ix===cmpIdx?' cmp':'')+(ix===mergedIdx?' merged':'');
+        const caret=(ix===ptr)?`<div class="caret">▲${ptrName}</div>`:`<div class="caret"></div>`;
+        return `<div class="mcell${cls}">${chipHTML(c)}${caret}</div>`;
+      }).join('')}</div>`;
+    };
+    // Caja de operación: se ve CÓMO se suma o se copia
+    let opbox='';
+    if(op&&op.tipo==='suma'){
+      const cc=COLOR[op.polo];
+      const right = op.pre
+        ? `<span class="opchip q">?</span>`
+        : `<span class="opchip res" style="--c:${cc}">${op.polo}<span class="qty">${op.resultado}</span><small>${op.a}+${op.b}</small></span>`;
+      opbox=`<div class="opbox ${op.pre?'fusion':''}">
+        <div class="oplbl">Caso 1 · mismo polo → un solo Conteo</div>
+        <div class="opline">
+          <span class="opchip" style="--c:${cc}">${op.polo}<span class="qty">${op.a}</span><small>izq</small></span>
+          <span class="opsign">+</span>
+          <span class="opchip" style="--c:${cc}">${op.polo}<span class="qty">${op.b}</span><small>der</small></span>
+          <span class="opsign eq">=</span>
+          ${right}
+        </div>
+        <div class="opfrom">${op.pre?`Los dos Conteos de "${op.polo}" se juntan en uno solo…`:`¡Sumados! Un <b>único</b> Conteo <b>${op.polo}:${op.resultado}</b> queda en el resultado.`}</div>
+      </div>`;
+    } else if(op&&(op.tipo==='copia-izq'||op.tipo==='copia-der')){
+      const cc=COLOR[op.polo], lado=op.tipo==='copia-izq'?'izquierda':'derecha';
+      opbox=`<div class="opbox">
+        <div class="oplbl">${op.sobrante?'Sobrante · copiar tal cual':'Sin pareja · copiar tal cual'}</div>
+        <div class="opline">
+          <span class="opchip" style="--c:${cc}">${op.polo}<span class="qty">${op.val}</span><small>${lado}</small></span>
+          <span class="opsign eq">→</span>
+          <span class="opchip res" style="--c:${cc}">${op.polo}<span class="qty">${op.val}</span></span>
+        </div>
+        <div class="opfrom">No hay otro <b>${op.polo}</b> con quien sumar aquí, así que pasa igual al resultado.</div>
+      </div>`;
+    } else if(m.fin){
+      opbox=`<div class="opbox"><div class="oplbl">merge terminado</div>
+        <div class="opfrom">Cada polo quedó en <b>un único Conteo</b>, ordenado por letra.</div></div>`;
+    }
+    const addRow=m.res.map((c,ix)=>`<div class="mcell${ix===m.addedIdx?' added':''}">${chipHTML(c)}<div class="caret"></div></div>`).join('');
+    box.innerHTML=`
+      <div class="mrow"><div class="mlabel">Izquierda &nbsp;<span class="muted">izq.n=${m.izq.length}</span></div>${cellRow(m.izq,m.i,cmpI,'i',mergeI)}</div>
+      <div class="mrow"><div class="mlabel">Derecha &nbsp;<span class="muted">der.n=${m.der.length}</span></div>${cellRow(m.der,m.j,cmpJ,'j',mergeJ)}</div>
+      ${opbox}
+      <div class="mrow"><div class="mlabel">Resultado — lo que va quedando &nbsp;<span class="muted">res.n=${m.res.length}</span></div>
+        <div class="mcells">${m.res.length?addRow:'<span class="muted" style="font-size:12px">(vacío)</span>'}</div>
+      </div>
+      <div class="ptrline">i=<b>${m.i}</b> &nbsp; j=<b>${m.j}</b> &nbsp; res.n=<b>${m.res.length}</b></div>`;
+    return;
+  }
+  // ----- MAYOR -----
+  if(s.mayor){
+    tit.textContent='mayor() — eligiendo la mayor cantidad';
+    const my=s.mayor;
+    box.innerHTML=`
+      <div class="mrow"><div class="mlabel">Tabla final de frecuencias</div>
+      <div class="mcells">${my.lista.map((c,ix)=>{
+        const isMejor=ix===my.mejor, isCur=ix===my.idx;
+        const crown=isMejor?' 👑':'';
+        const style=isMejor?'outline:2px solid var(--accent2);outline-offset:2px':(isCur?'outline:2px solid #fff;outline-offset:2px':'');
+        return `<div class="mcell"><span style="${style};border-radius:9px;display:inline-block">${chipHTML(c,'big')}</span><div class="caret">${crown||(isCur?'▲':'')}</div></div>`;
+      }).join('')}</div></div>
+      <p class="note" style="margin-top:10px">👑 = mejor hasta ahora &nbsp;·&nbsp; ▲ = el que se está comparando</p>
+      ${my.done?`<p class="note" style="color:var(--accent2);font-weight:700">Ganador: ${my.lista[my.mejor].polo} con ${my.lista[my.mejor].cantidad} unidades.</p>`:''}`;
+    return;
+  }
+  // ----- FRAME (divide / base / combinar) -----
+  const d=s.detalle||{};
+  if(d.tipo==='base-crear'||d.tipo==='base-listo'){
+    tit.textContent='Memoria — nuevo Resultado (caso base)';
+    box.innerHTML=`<p class="note">Se reserva un <code>Resultado</code> con una sola entrada:</p>
+      <div style="font-size:15px;margin:10px 0">${chipHTML({polo:d.polo|| (ALMACEN[s.seg[0]]),cantidad:1},'big')} &nbsp; <span class="muted">n = 1</span></div>
+      <p class="note muted">Un segmento de tamaño 1 es la pieza más pequeña: ese polo aparece exactamente 1 vez.</p>`;
+    return;
+  }
+  if(d.tipo==='divide'){
+    tit.textContent='Dividir el segmento';
+    box.innerHTML=`<p class="note">Se calcula <code>mitad = ${d.inicio} + (${d.fin} - ${d.inicio})/2 = <b>${d.mitad}</b></code>.</p>
+      <div class="row" style="margin-top:8px">
+        <div class="card" style="margin:0;background:#101a3d;text-align:center"><div class="mlabel">Izquierda</div><b>[${d.inicio}..${d.mitad}]</b><div class="muted" style="font-size:12px">se resuelve 1°</div></div>
+        <div class="card" style="margin:0;background:#101a3d;text-align:center"><div class="mlabel">Derecha</div><b>[${d.mitad+1}..${d.fin}]</b><div class="muted" style="font-size:12px">se resuelve 2°</div></div>
+      </div>`;
+    return;
+  }
+  if(d.tipo==='espera-der'){
+    tit.textContent='Izquierda lista, falta la derecha';
+    const izq=s.treeCopy[d.izqId].resultado;
+    box.innerHTML=`<p class="note">La mitad izquierda ya devolvió su tabla:</p>
+      <div style="margin:8px 0">${izq.map(c=>chipHTML(c,'big')).join(' ')}</div>
+      <p class="note muted">Ahora se llama a <code>mergesort(${d.mitad+1}, ${d.fin})</code> para la derecha.</p>`;
+    return;
+  }
+  if(d.tipo==='combinar'){
+    tit.textContent='Ambas mitades listas → merge';
+    const izq=s.treeCopy[d.izqId].resultado, der=s.treeCopy[d.derId].resultado;
+    box.innerHTML=`<div class="row">
+      <div class="card" style="margin:0;background:#101a3d"><div class="mlabel">Izquierda</div>${izq.map(c=>chipHTML(c)).join(' ')}</div>
+      <div style="display:flex;align-items:center;font-size:22px">🔗</div>
+      <div class="card" style="margin:0;background:#101a3d"><div class="mlabel">Derecha</div>${der.map(c=>chipHTML(c)).join(' ')}</div>
+      </div><p class="note muted" style="margin-top:8px">Se unirán sumando los polos iguales (ver detalle en los siguientes pasos).</p>`;
+    return;
+  }
+  if(d.tipo==='combinar-fin'){
+    tit.textContent='Segmento resuelto';
+    const r=s.treeCopy[d.nid].resultado;
+    box.innerHTML=`<p class="note">Tabla combinada del segmento:</p><div style="margin:8px 0">${r.map(c=>chipHTML(c,'big')).join(' ')}</div>
+      <p class="note muted">Se regresa hacia la llamada de arriba.</p>`;
+    return;
+  }
+  tit.textContent='En memoria';
+  box.innerHTML='<p class="note muted">—</p>';
+}
+
+/* ==========================================================================
+   NAVEGACIÓN
+   ========================================================================== */
+function goTo(i){ IDX=Math.max(0,Math.min(GEN.steps.length-1,i)); render(); }
+function next(){ if(IDX<GEN.steps.length-1){IDX++;render();} else pause(); }
+function prev(){ if(IDX>0){IDX--;render();} }
+function play(){
+  if(IDX>=GEN.steps.length-1) IDX=0;
+  TIMER=setInterval(()=>{ if(IDX<GEN.steps.length-1) next(); else pause(); }, +$('speed').value);
+  $('btnPlay').textContent='⏸ Pausa'; $('btnPlay').classList.remove('primary');
+}
+function pause(){ clearInterval(TIMER); TIMER=null; $('btnPlay').textContent='▶ Reproducir'; $('btnPlay').classList.add('primary'); }
+function togglePlay(){ TIMER?pause():play(); }
+
+/* ==========================================================================
+   ENTRADA / GENERACIÓN
+   ========================================================================== */
+function parseEntrada(txt){
+  const toks=txt.toUpperCase().split(/[\s,]+/).filter(Boolean);
+  const msg=$('entradaMsg');
+  if(toks.length===0){ msg.style.display='block'; msg.textContent='Escribe al menos 1 letra.'; return null; }
+  if(toks.length>14){ msg.style.display='block'; msg.textContent='Máximo 14 polos (para que el árbol quepa en pantalla).'; return null; }
+  for(const t of toks){ if(t.length!==1||t<'A'||t>'Z'){ msg.style.display='block'; msg.textContent=`"${t}" no es una sola letra A–Z.`; return null; } }
+  msg.style.display='none';
+  return toks;
+}
+function generar(){
+  pause();
+  const toks=parseEntrada($('entrada').value);
+  if(!toks) return;
+  ALMACEN=toks;
+  // colores por letra
+  COLOR={}; let ci=0;
+  ALMACEN.forEach(ch=>{ if(!(ch in COLOR)){ COLOR[ch]=PALETA[ci%PALETA.length]; ci++; } });
+  const distintos=Object.keys(COLOR).length;
+  $('pN').textContent=ALMACEN.length; $('pM').textContent=distintos;
+  GEN=buildAll(ALMACEN);
+  IDX=0;
+  buildAlmacenDOM();
+  buildTreeDOM();
+  render();
+}
+
+/* eventos */
+renderCode($('codeMs'),CODE_MS); renderCode($('codeMg'),CODE_MG); renderCode($('codeMy'),CODE_MY);
+$('btnNext').onclick=()=>{pause();next();};
+$('btnPrev').onclick=()=>{pause();prev();};
+$('btnFirst').onclick=()=>{pause();goTo(0);};
+$('btnLast').onclick=()=>{pause();goTo(GEN.steps.length-1);};
+$('btnPlay').onclick=togglePlay;
+$('btnGen').onclick=generar;
+$('speed').oninput=()=>{ if(TIMER){pause();play();} };
+$('entrada').addEventListener('keydown',e=>{ if(e.key==='Enter') generar(); });
+document.querySelectorAll('[data-ej]').forEach(b=>b.onclick=()=>{ $('entrada').value=b.dataset.ej; generar(); });
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowRight'){pause();next();e.preventDefault();}
+  else if(e.key==='ArrowLeft'){pause();prev();e.preventDefault();}
+  else if(e.key===' '){togglePlay();e.preventDefault();}
+  else if(e.key==='Home'){pause();goTo(0);}
+  else if(e.key==='End'){pause();goTo(GEN.steps.length-1);}
+});
+
+/* arranque */
+generar();
+</script>
+</body>
+</html>

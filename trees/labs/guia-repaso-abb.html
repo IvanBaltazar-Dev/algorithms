@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de repaso ABB — Pila/Cola y funciones de la librería</title>
+<style>
+  :root { --tinta:#1a1a1a; --suave:#5b5b5b; --linea:#d8d8d8; --codbg:#f6f6f4; --cmt:#4a8a4a; --acc:#8a4a1a; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--tinta);
+         line-height: 1.55; max-width: 900px; margin: 0 auto; padding: 28px 22px; }
+  h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px; }
+  h2 { font-size: 19px; font-weight: 600; margin: 30px 0 8px; padding-top: 10px; border-top: 2px solid var(--tinta); }
+  h3 { font-size: 15px; font-weight: 600; margin: 20px 0 6px; color: var(--acc); }
+  p { margin: 8px 0; }
+  .sub { color: var(--suave); margin: 0 0 14px; }
+  .badge { display: inline-block; background: #eee; border: 1px solid var(--linea); border-radius: 6px;
+           padding: 2px 8px; font-size: 12px; color: var(--suave); }
+  code.inl { background: var(--codbg); border: 1px solid var(--linea); border-radius: 4px; padding: 0 4px; font-size: 90%; }
+  pre { background: var(--codbg); border: 1px solid var(--linea); border-left: 4px solid var(--acc);
+        border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 10px 0; }
+  pre code { font-family: "Cascadia Code", "Consolas", "SF Mono", monospace; font-size: 12.5px; line-height: 1.5; white-space: pre; }
+  .cmt { color: var(--cmt); font-style: italic; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
+  th, td { border: 1px solid var(--linea); padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: #f0f0ee; font-weight: 600; }
+  .nota { background: #fbf6ee; border: 1px solid #e6d9bf; border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 13.5px; }
+  .ok { color: #2b7a2b; font-weight: 600; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  @media print {
+    body { max-width: none; padding: 0; font-size: 11pt; }
+    h2 { page-break-after: avoid; }
+    h3 { page-break-after: avoid; }
+    pre, table, .nota { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Guía de repaso ABB</h1>
+<p class="sub">Recorridos iterativos (Pila/Cola) · funciones de la librería · plantillas recursivas — Librería de Ana Roncal (<code class="inl">numero</code>, <code class="inl">cantidad</code>)</p>
+
+<h2>1. Ejercicio resuelto — usa Pila</h2>
+<p><span class="badge">Laboratorio 4 (2024-2) · Pregunta 2 · "Vitivinícola"</span> &nbsp; INF27 · profesores Ana Roncal, F. Huamán, D. Allasi, R. Cueva, H. Sánchez.</p>
+
+<h3>Enunciado (resumen)</h3>
+<p>Una empresa vitivinícola guarda su almacén en un <strong>ABB ordenado por el año del lote</strong> (clave = año tipo <code class="inl">2018</code>; dato = cantidad de botellas, &lt; 1000). Todas las botellas de un mismo año se juntan en un solo lote sumando la cantidad.</p>
+<ul>
+  <li><strong>a) (3 pts) <code class="inl">ingresa_lote</code>:</strong> inserta un lote nuevo, o si el año ya existe, solo <em>actualiza</em> (suma) su cantidad.</li>
+  <li><strong>b) (7 pts) reporte de stock en orden descendente por año.</strong> Debe ser <strong>totalmente iterativo</strong> (si no, no vale). Solo puede usar <strong>una pila o cola auxiliar</strong>, y esa pila/cola <strong>solo recibe datos, no nodos del árbol</strong>.</li>
+</ul>
+
+<p>Árbol de ejemplo y salida esperada del reporte descendente:</p>
+<pre><code>            2018-100
+           /        \
+      2011-150      2022-50
+      /      \       /      \
+ 2010-175  2017-25  2019-125  2023-200
+                       \
+                     2020-75
+
+Reporte (mayor a menor año):
+2023-200  2022-50  2020-75  2019-125  2018-100  2017-25  2011-300  2010-175</code></pre>
+<p class="sub">(El <code class="inl">2011-300</code> del reporte refleja el estado tras un <code class="inl">ingresa_lote</code> que acumuló stock en 2011; lo que se evalúa es el <strong>orden</strong>, que sí coincide.)</p>
+
+<h3>Auxiliar necesaria: buscarNodo (retorna el puntero al nodo)</h3>
+<p>La librería trae <code class="inl">buscar()</code> que devuelve <code class="inl">bool</code> — no sirve para modificar ni navegar. Necesitas una que devuelva el <code class="inl">Nodo*</code>. El enunciado permite "los auxiliares que necesite".</p>
+<pre><code><span class="cmt">// Devuelve el puntero al nodo cuya clave (numero) es igual a "clave",</span>
+<span class="cmt">// o nullptr si no existe. Aprovecha el orden del ABB (no recorre todo).</span>
+NodoArbolBinarioBusqueda* buscarNodo(NodoArbolBinarioBusqueda *nodo, int clave) {
+    if (esNodoVacio(nodo)) return nullptr;
+    if (nodo-&gt;elemento.numero == clave) return nodo;
+    if (clave &lt; nodo-&gt;elemento.numero)
+        return buscarNodo(nodo-&gt;izquierda, clave);
+    else
+        return buscarNodo(nodo-&gt;derecha, clave);
+}</code></pre>
+
+<h3>Parte a) ingresa_lote — insertar o actualizar</h3>
+<pre><code><span class="cmt">// Estrategia: primero busco si el año ya existe en el ABB.</span>
+<span class="cmt">// Si existe, solo sumo la cantidad al lote (no inserto nodo nuevo).</span>
+<span class="cmt">// Si no existe, uso el insertar de la libreria (ordena por numero=año).</span>
+void ingresa_lote(ArbolBinarioBusqueda &amp;arbol, int anio, int cantidad) {
+    NodoArbolBinarioBusqueda *nodo = buscarNodo(arbol.raiz, anio);
+    if (nodo != nullptr)
+        nodo-&gt;elemento.cantidad += cantidad;   <span class="cmt">// el año ya existe: acumulo stock</span>
+    else
+        insertar(arbol, {anio, cantidad});     <span class="cmt">// año nuevo: inserto un nodo</span>
+}</code></pre>
+
+<h3>Parte b) reporte descendente — iterativo con Pila</h3>
+<p>Descendente en un ABB = recorrido en orden <strong>inverso</strong>: <code class="inl">derecha → nodo → izquierda</code>. Es el inorden iterativo, pero bajando por la derecha en vez de la izquierda.</p>
+<pre><code><span class="cmt">// Estrategia: recorrido en orden inverso (der, nodo, izq) de forma</span>
+<span class="cmt">// iterativa con una Pila. Bajo por la DERECHA apilando; cuando ya no</span>
+<span class="cmt">// puedo bajar, desapilo (ese es el mayor pendiente), lo muestro, y</span>
+<span class="cmt">// sigo por su IZQUIERDA. La pila guarda solo el año, no el nodo.</span>
+void reporteDescendente(const ArbolBinarioBusqueda &amp;arbol) {
+    Pila pila;
+    construir(pila);
+    NodoArbolBinarioBusqueda *actual = arbol.raiz;
+
+    while (actual != nullptr || not esPilaVacia(pila)) {
+        <span class="cmt">// 1) Bajo por la DERECHA apilando solo la clave (año)</span>
+        while (actual != nullptr) {
+            ElementoPila dato;
+            dato.numero = actual-&gt;elemento.numero;
+            apilar(pila, dato);
+            actual = actual-&gt;derecha;
+        }
+        <span class="cmt">// 2) Saco el año del tope y re-ubico el nodo real desde la raíz</span>
+        <span class="cmt">//    (la pila solo guarda datos, por eso lo vuelvo a buscar)</span>
+        int anio = desapilar(pila).numero;
+        actual = buscarNodo(arbol.raiz, anio);
+        <span class="cmt">// 3) Muestro el lote: año-cantidad</span>
+        cout &lt;&lt; actual-&gt;elemento.numero &lt;&lt; "-" &lt;&lt; actual-&gt;elemento.cantidad &lt;&lt; "  ";
+        <span class="cmt">// 4) Continúo por la IZQUIERDA</span>
+        actual = actual-&gt;izquierda;
+    }
+}</code></pre>
+
+<h3>main de prueba</h3>
+<pre><code>int main() {
+    ArbolBinarioBusqueda arbol;
+    construir(arbol);
+
+    ingresa_lote(arbol, 2018, 100);
+    ingresa_lote(arbol, 2011, 150);
+    ingresa_lote(arbol, 2022, 50);
+    ingresa_lote(arbol, 2010, 175);
+    ingresa_lote(arbol, 2017, 25);
+    ingresa_lote(arbol, 2019, 125);
+    ingresa_lote(arbol, 2023, 200);
+    ingresa_lote(arbol, 2020, 75);
+    ingresa_lote(arbol, 2011, 150);   <span class="cmt">// 2011 ya existe -&gt; 150 + 150 = 300</span>
+
+    reporteDescendente(arbol); cout &lt;&lt; endl;
+    return 0;
+}</code></pre>
+
+<div class="nota"><strong>Por qué funciona (para el comentario que exige el profesor):</strong> el recorrido en orden de un ABB entrega las claves ordenadas; si en vez de <em>izq–nodo–der</em> hago <em>der–nodo–izq</em>, salen de mayor a menor. La pila me guarda el "camino de regreso" mientras bajo por la derecha. Como esta librería de <code class="inl">Pila</code> solo almacena enteros (<code class="inl">ElementoPila = {numero, tipo}</code>), guardo el año y re-ubico el nodo con <code class="inl">buscarNodo</code> — cumpliendo "solo datos, no nodos".</div>
+
+<h2>2. Qué hace cada función de la librería</h2>
+
+<table>
+  <tr><th>Función</th><th>Qué hace</th><th>Detalle clave</th></tr>
+  <tr><td><code class="inl">construir</code></td><td>Deja <code class="inl">raiz = nullptr</code></td><td>Siempre al inicio</td></tr>
+  <tr><td><code class="inl">esArbolVacio</code> / <code class="inl">esNodoVacio</code></td><td>Test de vacío</td><td>Úsalas en vez de <code class="inl">== nullptr</code></td></tr>
+  <tr><td><code class="inl">plantarNodoArbolBinario</code></td><td>Crea un nodo con <code class="inl">new</code></td><td>Es el "crearNodo" de bajo nivel</td></tr>
+  <tr><td><code class="inl">insertar</code></td><td>Inserta por <code class="inl">numero</code></td><td>Duplicado: avisa, no inserta</td></tr>
+  <tr><td><code class="inl">buscar</code></td><td>Devuelve <code class="inl">bool</code></td><td>Para <em>modificar</em> usa tu <code class="inl">buscarNodo</code></td></tr>
+  <tr><td><code class="inl">minimoArbol</code></td><td>Nodo con la clave más chica</td><td>El extremo izquierdo</td></tr>
+  <tr><td><code class="inl">eliminar</code></td><td>Borra por <code class="inl">numero</code></td><td>Reemplaza con el sucesor</td></tr>
+  <tr><td><code class="inl">recorrer{Pre,En,Post}Orden</code></td><td>Imprime</td><td>EnOrden = ordenado</td></tr>
+  <tr><td><code class="inl">numeroNodos / numeroHojas / altura</code></td><td>Cuentan / miden</td><td>Altura: vacío=0, hoja=1</td></tr>
+  <tr><td><code class="inl">esEquilibrado</code></td><td><code class="inl">|altIzq − altDer| ≤ 1</code> en todo nodo</td><td>Usa <code class="inl">altura</code> internamente</td></tr>
+</table>
+
+<h3>minimoArbol</h3>
+<pre><code><span class="cmt">// Devuelve el nodo con la clave MÁS PEQUEÑA del (sub)árbol.</span>
+<span class="cmt">// En un ABB el mínimo siempre está en el extremo izquierdo:</span>
+<span class="cmt">// bajo por ->izquierda hasta que ya no haya hijo izquierdo.</span>
+NodoArbolBinarioBusqueda* minimoArbol(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return nodo;             <span class="cmt">// árbol vacío: no hay mínimo</span>
+    if (esNodoVacio(nodo-&gt;izquierda)) return nodo;  <span class="cmt">// sin hijo izq: este es el mínimo</span>
+    return minimoArbol(nodo-&gt;izquierda);            <span class="cmt">// sigo bajando a la izquierda</span>
+}</code></pre>
+
+<h3>insertarRecursivo</h3>
+<pre><code><span class="cmt">// El *&amp; (puntero por referencia) es clave: permite que cuando plante</span>
+<span class="cmt">// un nodo nuevo, el hijo del padre apunte realmente a él.</span>
+void insertarRecursivo(NodoArbolBinarioBusqueda *&amp;raiz, const ElementoArbolBinarioBusqueda &amp;elemento) {
+    if (esNodoVacio(raiz))
+        plantarNodoArbolBinario(raiz, nullptr, elemento, nullptr); <span class="cmt">// hueco: planto aquí</span>
+    else if (raiz-&gt;elemento.numero &gt; elemento.numero)
+        insertarRecursivo(raiz-&gt;izquierda, elemento);   <span class="cmt">// menor: voy a la izquierda</span>
+    else if (raiz-&gt;elemento.numero &lt; elemento.numero)
+        insertarRecursivo(raiz-&gt;derecha, elemento);     <span class="cmt">// mayor: voy a la derecha</span>
+    else
+        cout &lt;&lt; "El elemento ya se encuentra" &lt;&lt; endl; <span class="cmt">// igual: no se duplica</span>
+}</code></pre>
+
+<h3>buscarRecursivo</h3>
+<pre><code>bool buscarRecursivo(NodoArbolBinarioBusqueda *nodo, const ElementoArbolBinarioBusqueda &amp;elemento) {
+    if (esNodoVacio(nodo)) return false;                 <span class="cmt">// llegué a vacío: no está</span>
+    if (nodo-&gt;elemento.numero == elemento.numero) return true;
+    if (elemento.numero &lt; nodo-&gt;elemento.numero)
+        return buscarRecursivo(nodo-&gt;izquierda, elemento);
+    else
+        return buscarRecursivo(nodo-&gt;derecha, elemento);
+}</code></pre>
+
+<h3>eliminarRecursivo — los 3 casos</h3>
+<pre><code>NodoArbolBinarioBusqueda* eliminarRecursivo(NodoArbolBinarioBusqueda *nodo,
+                                            const ElementoArbolBinarioBusqueda &amp;elemento) {
+    if (esNodoVacio(nodo)) return nodo;                  <span class="cmt">// no se encontró</span>
+    if (nodo-&gt;elemento.numero &gt; elemento.numero)
+        nodo-&gt;izquierda = eliminarRecursivo(nodo-&gt;izquierda, elemento);
+    else if (nodo-&gt;elemento.numero &lt; elemento.numero)
+        nodo-&gt;derecha = eliminarRecursivo(nodo-&gt;derecha, elemento);
+    else {
+        <span class="cmt">// ENCONTRADO. Casos 1 y 2: cero o un solo hijo</span>
+        if (esNodoVacio(nodo-&gt;izquierda)) {
+            NodoArbolBinarioBusqueda *hijo = nodo-&gt;derecha;
+            delete nodo;
+            return hijo;                                 <span class="cmt">// sube el hijo derecho (o nullptr)</span>
+        }
+        if (esNodoVacio(nodo-&gt;derecha)) {
+            NodoArbolBinarioBusqueda *hijo = nodo-&gt;izquierda;
+            delete nodo;
+            return hijo;                                 <span class="cmt">// sube el hijo izquierdo</span>
+        }
+        <span class="cmt">// Caso 3: dos hijos -> reemplazo con el sucesor (mínimo del subárbol derecho)</span>
+        NodoArbolBinarioBusqueda *suc = minimoArbol(nodo-&gt;derecha);
+        nodo-&gt;elemento = suc-&gt;elemento;                  <span class="cmt">// copio el valor del sucesor</span>
+        nodo-&gt;derecha = eliminarRecursivo(nodo-&gt;derecha, suc-&gt;elemento); <span class="cmt">// y lo borro</span>
+    }
+    return nodo;
+}</code></pre>
+
+<h3>Recorridos (los 3 DFS)</h3>
+<pre><code><span class="cmt">// Preorden (raíz, izq, der): sirve para reconstruir/copiar un árbol</span>
+void preOrden(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return;
+    imprimirNodo(nodo);                 <span class="cmt">// &lt;- raíz primero</span>
+    preOrden(nodo-&gt;izquierda);
+    preOrden(nodo-&gt;derecha);
+}
+<span class="cmt">// En orden (izq, raíz, der): en un ABB sale ORDENADO de menor a mayor</span>
+void enOrden(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return;
+    enOrden(nodo-&gt;izquierda);
+    imprimirNodo(nodo);                 <span class="cmt">// &lt;- raíz en medio</span>
+    enOrden(nodo-&gt;derecha);
+}
+<span class="cmt">// Postorden (izq, der, raíz): sirve para eliminar/liberar (hijos antes que el padre)</span>
+void postOrden(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return;
+    postOrden(nodo-&gt;izquierda);
+    postOrden(nodo-&gt;derecha);
+    imprimirNodo(nodo);                 <span class="cmt">// &lt;- raíz al final</span>
+}</code></pre>
+
+<h3>altura y esEquilibrado</h3>
+<pre><code><span class="cmt">// Altura en ESTA librería: vacío = 0, hoja = 1 (ojo, en otras es -1 / 0)</span>
+int alturaRecursivo(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return 0;
+    if (esNodoVacio(nodo-&gt;izquierda) &amp;&amp; esNodoVacio(nodo-&gt;derecha)) return 1;
+    return 1 + maximo(alturaRecursivo(nodo-&gt;izquierda), alturaRecursivo(nodo-&gt;derecha));
+}
+<span class="cmt">// Equilibrado: en CADA nodo, la diferencia de alturas de sus ramas es &lt;= 1</span>
+bool esEquilibradoRecursivo(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return true;
+    int hi = alturaRecursivo(nodo-&gt;izquierda);
+    int hd = alturaRecursivo(nodo-&gt;derecha);
+    return abs(hi - hd) &lt;= 1
+        &amp;&amp; esEquilibradoRecursivo(nodo-&gt;izquierda)
+        &amp;&amp; esEquilibradoRecursivo(nodo-&gt;derecha);
+}</code></pre>
+
+<h2>3. Plantillas recursivas de cálculo (con código)</h2>
+<p>Patrón universal: <strong>si vacío → valor neutro; si no → combinar(f(izq), f(der), algo del nodo)</strong>.</p>
+
+<table>
+  <tr><th>Quieres…</th><th>Neutro</th><th>Combinación</th></tr>
+  <tr><td>contar nodos</td><td>0</td><td><code class="inl">1 + f(izq) + f(der)</code></td></tr>
+  <tr><td>sumar valores</td><td>0</td><td><code class="inl">nodo-&gt;..numero + f(izq) + f(der)</code></td></tr>
+  <tr><td>contar hojas</td><td>0</td><td>hoja→1, si no <code class="inl">f(izq)+f(der)</code></td></tr>
+  <tr><td>altura</td><td>0</td><td><code class="inl">1 + max(f(izq), f(der))</code></td></tr>
+  <tr><td>contar los que cumplen X</td><td>0</td><td><code class="inl">(cumpleX ? 1:0) + f(izq) + f(der)</code></td></tr>
+</table>
+
+<pre><code><span class="cmt">// contar nodos</span>
+int numeroNodos(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return 0;                  <span class="cmt">// neutro</span>
+    return 1 + numeroNodos(nodo-&gt;izquierda) + numeroNodos(nodo-&gt;derecha);
+}
+
+<span class="cmt">// sumar valores (aquí sumo las cantidades de todos los lotes)</span>
+int sumarCantidades(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return 0;
+    return nodo-&gt;elemento.cantidad
+         + sumarCantidades(nodo-&gt;izquierda)
+         + sumarCantidades(nodo-&gt;derecha);
+}
+
+<span class="cmt">// contar hojas</span>
+int numeroHojas(NodoArbolBinarioBusqueda *nodo) {
+    if (esNodoVacio(nodo)) return 0;
+    if (esNodoVacio(nodo-&gt;izquierda) &amp;&amp; esNodoVacio(nodo-&gt;derecha)) return 1; <span class="cmt">// es hoja</span>
+    return numeroHojas(nodo-&gt;izquierda) + numeroHojas(nodo-&gt;derecha);
+}
+
+<span class="cmt">// contar los que cumplen X  (ej.: lotes con cantidad mayor a un umbral)</span>
+int contarStockAlto(NodoArbolBinarioBusqueda *nodo, int umbral) {
+    if (esNodoVacio(nodo)) return 0;
+    int yo = (nodo-&gt;elemento.cantidad &gt; umbral) ? 1 : 0;   <span class="cmt">// ¿este nodo cumple?</span>
+    return yo + contarStockAlto(nodo-&gt;izquierda, umbral)
+             + contarStockAlto(nodo-&gt;derecha, umbral);
+}</code></pre>
+
+<h2>4. Plantillas iterativas (Pila y Cola)</h2>
+
+<h3>Inorden iterativo con Pila (sale ordenado ascendente)</h3>
+<pre><code>void inordenIterativo(const ArbolBinarioBusqueda &amp;arbol) {
+    Pila pila; construir(pila);
+    NodoArbolBinarioBusqueda *actual = arbol.raiz;
+    while (actual != nullptr || not esPilaVacia(pila)) {
+        while (actual != nullptr) {                  <span class="cmt">// bajo apilando por la IZQUIERDA</span>
+            ElementoPila d; d.numero = actual-&gt;elemento.numero;
+            apilar(pila, d);
+            actual = actual-&gt;izquierda;
+        }
+        int clave = desapilar(pila).numero;
+        actual = buscarNodo(arbol.raiz, clave);
+        imprimirNodo(actual);                        <span class="cmt">// proceso</span>
+        actual = actual-&gt;derecha;                     <span class="cmt">// sigo por la DERECHA</span>
+    }
+}</code></pre>
+
+<h3>Preorden iterativo con Pila</h3>
+<pre><code>void preordenIterativo(const ArbolBinarioBusqueda &amp;arbol) {
+    if (esArbolVacio(arbol)) return;
+    Pila pila; construir(pila);
+    ElementoPila r; r.numero = arbol.raiz-&gt;elemento.numero;
+    apilar(pila, r);
+    while (not esPilaVacia(pila)) {
+        int clave = desapilar(pila).numero;
+        NodoArbolBinarioBusqueda *nodo = buscarNodo(arbol.raiz, clave);
+        imprimirNodo(nodo);                          <span class="cmt">// proceso la raíz primero</span>
+        <span class="cmt">// apilo DERECHA y luego IZQUIERDA (para sacar la izquierda antes)</span>
+        if (nodo-&gt;derecha != nullptr)   { ElementoPila d; d.numero = nodo-&gt;derecha-&gt;elemento.numero;   apilar(pila, d); }
+        if (nodo-&gt;izquierda != nullptr) { ElementoPila i; i.numero = nodo-&gt;izquierda-&gt;elemento.numero; apilar(pila, i); }
+    }
+}</code></pre>
+
+<h3>Por niveles (BFS) con Cola — el truco del "longitud"</h3>
+<pre><code>void porNiveles(const ArbolBinarioBusqueda &amp;arbol) {
+    if (esArbolVacio(arbol)) return;
+    Cola cola; construir(cola);
+    ElementoCola r; r.numero = arbol.raiz-&gt;elemento.numero; encolar(cola, r);
+    int nivel = 0;
+    while (not esColaVacia(cola)) {
+        int n = longitud(cola);                      <span class="cmt">// cuántos nodos hay en ESTE nivel</span>
+        cout &lt;&lt; "Nivel " &lt;&lt; nivel &lt;&lt; ": ";
+        for (int i = 0; i &lt; n; i++) {
+            int clave = desencolar(cola).numero;
+            NodoArbolBinarioBusqueda *nodo = buscarNodo(arbol.raiz, clave);
+            imprimirNodo(nodo);
+            if (nodo-&gt;izquierda != nullptr) { ElementoCola e; e.numero = nodo-&gt;izquierda-&gt;elemento.numero; encolar(cola, e); }
+            if (nodo-&gt;derecha != nullptr)   { ElementoCola e; e.numero = nodo-&gt;derecha-&gt;elemento.numero;   encolar(cola, e); }
+        }
+        nivel++; cout &lt;&lt; endl;
+    }
+}</code></pre>
+
+<div class="nota">
+<strong>Dos avisos para el examen:</strong>
+<ul>
+  <li>Los campos del elemento de Pila/Cola dependen de la librería que te den. En la que revisé, <code class="inl">ElementoPila = {numero, tipo}</code> y <code class="inl">ElementoCola</code> a veces usa <code class="inl">codigo</code> en vez de <code class="inl">numero</code>. <strong>Revisa el nombre exacto</strong> del campo antes de compilar.</li>
+  <li>Aquí re-ubico el nodo con <code class="inl">buscarNodo</code> porque esta Pila/Cola <strong>solo guarda enteros</strong>. Si tu librería permite guardar un puntero al nodo, guárdalo directo y te ahorras el <code class="inl">buscarNodo</code> (queda O(n) en vez de O(n·log n)).</li>
+</ul>
+</div>
+
+<h2>Checklist de 2 minutos antes de entregar</h2>
+<ul>
+  <li>Primera línea de cada función recursiva: <code class="inl">if (esNodoVacio(...)) return ...;</code></li>
+  <li>¿Vas a <strong>modificar</strong> un nodo? → <code class="inl">buscarNodo</code> que retorna <code class="inl">Nodo*</code>, nunca <code class="inl">buscar()</code>.</li>
+  <li>¿Insertas con clave distinta a <code class="inl">numero</code>? → o tu propio insertar, o codificas la clave dentro de <code class="inl">numero</code>.</li>
+  <li>Comentario de estrategia en CADA función (lo exige el enunciado, si no, sin derecho a reclamo).</li>
+  <li>Imprime lo que pide el enunciado (recorrido en orden / <code class="inl">esEquilibrado</code> / lo que sea) antes de terminar.</li>
+  <li>Solo librerías permitidas: <code class="inl">iostream, iomanip, climits, cstring, cmath, fstream</code>. Nada de <code class="inl">&lt;algorithm&gt;</code> ni <code class="inl">&lt;bits/...&gt;</code>.</li>
+</ul>
+
+<script>
+  document.querySelectorAll('pre code').forEach(function(b){
+    if (b.querySelector('.cmt')) return;               // ya tiene comentarios marcados a mano
+    b.innerHTML = b.innerHTML.replace(/(\/\/.*)$/gm, '<span class="cmt">$1</span>');
+  });
+</script>
+
+</body>
+</html>

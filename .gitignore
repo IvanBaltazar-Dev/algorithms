@@ -1,28 +1,72 @@
-# IDE
+# ============================================================
+# IDEs y editores
+# ============================================================
 .idea/
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
 
-# CLion / CMake
+# Serena
+.serena/
+
+# ============================================================
+# CMake
+# ============================================================
 cmake-build-*/
 CMakeFiles/
 CMakeCache.txt
-compile_commands.json
 cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+build.ninja
 .ninja_deps
 .ninja_log
-build.ninja
 
-# Binarios y objetos
-*.exe
-*.obj
-*.o
-*.out
-*.class
-
-# Carpetas de build comunes
+# ============================================================
+# Directorios de compilación
+# ============================================================
 build/
 out/
 target/
 bin/
 
-# Sistema
+# ============================================================
+# Binarios y objetos compilados
+# ============================================================
+*.exe
+*.obj
+*.o
+*.out
+*.class
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.pdb
+
+# ============================================================
+# Archivos comprimidos
+# ============================================================
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# ============================================================
+# Archivos temporales y caché
+# ============================================================
+*.tmp
+*.temp
+*.log
+.cache/
+
+# ============================================================
+# Sistema operativo
+# ============================================================
 .DS_Store
+Thumbs.db
+desktop.ini
